@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real-Time Chat</title>
+    <style>
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }
+      li {
+        padding: 8px;
+        background: #f4f4f4;
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <form id="message-form">
+      <input id="input" autocomplete="off" />
+      <button type="submit">Send</button>
+    </form>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+      var form = document.getElementById('message-form');
+      var input = document.getElementById('input');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit('chat message', input.value);
+          input.value = '';
+        }
+      });
+
+      //   socket.on('message', (message) => {
+      //     console.log(message.text);
+      //     const html = Mustache.render(messageTemplate, {
+      //       message: message.text,
+      //       username: message.username,
+      //       createdAt: moment(message.createdAt).format('h:mm A')
+      //     });
+      //     $viewMessage.insertAdjacentHTML('beforeend', html);
+      //   });
+
+      socket.on('message', function (msg) {
+        console.log(msg);
+        var item = document.createElement('li');
+        item.textContent = msg;
+        document.getElementById('messages').appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+    </script>
+  </body>
+</html>
